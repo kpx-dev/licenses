@@ -45,3 +45,24 @@ class DDB:
         )
 
         return res["Items"]
+
+    def search_by_name(self, state, agency, query):
+        partition_key = "{}-{}".format(state, agency)
+        filters = False
+
+        if "first_name" in query:
+            filters = Attr('first_name').begins_with(query['first_name'])
+
+        if "last_name" in query:
+            curr_filter = Attr('last_name').begins_with(query['last_name'])
+            if filters:
+                filters = filters & curr_filter
+            else:
+                filters = curr_filter
+
+        res = self.table.query(
+            KeyConditionExpression=Key(self.partition_key).eq(partition_key),
+            FilterExpression=filters
+        )
+
+        return res["Items"]

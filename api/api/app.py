@@ -44,9 +44,11 @@ def handle_license_status(state, agency, status):
 
     return resp(res)
 
-# ex: GET /search?q=”cpa license in california”
-def handle_search():
-    pass
+# ex: GET /tx/accountants/search?first_name=A&last_name=B
+def handle_search(state, agency, query):
+    res = db.search_by_name(state, agency, query)
+
+    return resp(res)
 
 def lambda_handler(event, context):
     # print('got event ', json.dumps(event))
@@ -67,6 +69,11 @@ def lambda_handler(event, context):
 
         return handle_state_agency(state, agency)
     elif len(path) == 3:
+        state, agency, extra = path
+
+        if extra == 'search':
+            return handle_search(state, agency, event['queryStringParameters'])
+
         return handle_state_agency_license(path[0], path[1], path[2])
 
     return resp("This request is not supported right now.")
