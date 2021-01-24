@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: pro-licenses API
+
+Globals:
+  Function:
+    Timeout: 5
+
+Resources:
+  ProLicensesAPIFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      Events:
+        HelloWorld:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: get
+            # Path: /
+            # Method: get
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: ./api
+      DockerTag: latest # python3.8-v1
+
+Outputs:
+  APIGatewayEndpoint:
+    Description: "api gateway endpoint"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
