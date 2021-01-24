@@ -2,8 +2,13 @@
 # load_dotenv()
 import json
 from db import DDB
-
 db = DDB()
+
+with open('agencies.json') as f:
+  agencies = json.load(f)
+
+def agency_slug(name):
+    return '-'.join(name.replace(',', '').lower().split())
 
 def resp(message):
     return {
@@ -23,9 +28,19 @@ def handle_state_agency(state, agency):
     # message = "/{} collection is not supported yet".format(state)
     return resp(res)
 
+# ex: GET /ca/agencies
+def handle_state_agencies(state):
+    return resp(agencies[state])
+
 # ex: GET /tx/accountants/123
 def handle_state_agency_license(state, agency, license_number):
     res = db.get_state_agency_license(state, agency, license_number)
+
+    return resp(res)
+
+# ex: GET /tx/accountants?status=active
+def handle_license_status(state, agency, status):
+    res = db.get_license_by_status(state, agency, status)
 
     return resp(res)
 
@@ -33,15 +48,24 @@ def handle_state_agency_license(state, agency, license_number):
 def handle_search():
     pass
 
-
-
 def lambda_handler(event, context):
     # print('got event ', json.dumps(event))
     path = event['pathParameters']['proxy'].strip().split('/')
     if len(path) == 1:
         return handle_state(path[0])
     elif len(path) == 2:
-        return handle_state_agency(path[0], path[1])
+        state, agency = path
+
+        if agency == 'agencies':
+            return handle_state_agencies(state)
+
+        if "queryStringParameters" in event:
+            if "status" in event["queryStringParameters"]:
+                status = event["queryStringParameters"]["status"] # TODO .lower()
+
+                return handle_license_status(state, agency, status)
+
+        return handle_state_agency(state, agency)
     elif len(path) == 3:
         return handle_state_agency_license(path[0], path[1], path[2])
 

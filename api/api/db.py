@@ -1,5 +1,5 @@
 import boto3
-from boto3.dynamodb.conditions import Key
+from boto3.dynamodb.conditions import Key, Attr
 
 ddb = boto3.resource('dynamodb')
 
@@ -34,3 +34,14 @@ class DDB:
         )
 
         return res['Items']
+
+    def get_license_by_status(self, state, agency, status):
+        partition_key = "{}-{}".format(state, agency)
+
+        res = self.table.query(
+            Limit=self.query_limit,
+            KeyConditionExpression=Key(self.partition_key).eq(partition_key),
+            FilterExpression=Attr('license_status').eq(status)
+        )
+
+        return res["Items"]

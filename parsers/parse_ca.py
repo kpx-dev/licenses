@@ -35,7 +35,7 @@ def parse(file_path):
                     "country": row["Country"].strip(),
                     "license_issue_date": row["Original Issue Date"].strip(),
                     "license_expiration_date": row["Expiration Date"].strip(),
-                    "license_status": row["License Status"].strip()
+                    "license_status": row["License Status"].strip().lower()
                 }
 
                 if row["Indiv/Org"] == "I":
@@ -53,7 +53,8 @@ def parse(file_path):
             print('error parsing, skipping')
 
 def save(item):
-    agency_slug = '-'.join(item["agency_name"].lower().split())
+    agency_slug = '-'.join(item["agency_name"].replace(',', '').lower().split())
+
     item[partition_key] = "ca-{}".format(agency_slug)
     item[sort_key] = item["license_number"]
 
