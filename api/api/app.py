@@ -33,6 +33,8 @@ def handle_state_agency_license(state, agency, license_number):
 def handle_search():
     pass
 
+
+
 def lambda_handler(event, context):
     # print('got event ', json.dumps(event))
     path = event['pathParameters']['proxy'].strip().split('/')

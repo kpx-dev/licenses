@@ -6,19 +6,26 @@ Globals:
   Function:
     Timeout: 5
 
+  # Api:
+  #   EndpointConfiguration: REGIONAL
+  #   Domain:
+  #     DomainName: licenses.kienpham.com
+  #     CertificateArn: my-valid-cert-arn
+  #     EndpointConfiguration: EDGE
+
 Resources:
   ProLicensesAPIFunction:
     Type: AWS::Serverless::Function
     Properties:
       PackageType: Image
+      Policies:
+        - AmazonDynamoDBFullAccess
       Events:
-        HelloWorld:
+        RESTAPIEvent:
           Type: Api
           Properties:
             Path: /{proxy+}
             Method: get
-            # Path: /
-            # Method: get
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./api
