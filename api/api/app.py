@@ -56,7 +56,7 @@ def handle_license_status(state, agency, status):
 
 # ex: GET /tx/accountants/search?first_name=A&last_name=B
 def handle_search(state, agency, query):
-    res = db.search_by_name(state, agency, query)
+    res = db.search(state, agency, query)
 
     return resp(res)
 

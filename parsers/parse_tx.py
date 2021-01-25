@@ -1,5 +1,3 @@
-from dotenv import load_dotenv
-load_dotenv()
 import os
 import csv
 import json
@@ -7,10 +5,9 @@ from db import DDBQueue
 from os import walk
 
 cwd = os.getcwd()
-ddb_table_name = os.getenv("DDB_TABLE_NAME")
 partition_key = "state-agency"
 sort_key = "license-number"
-queue = DDBQueue(table_name=ddb_table_name, partition_key=partition_key, sort_key=sort_key)
+queue = DDBQueue()
 
 def parse_tow_companies(file_path):
     with open(file_path) as fd:
@@ -61,8 +58,8 @@ def parse_massage_instructor(file_path):
         item = {}
         try:
             for row in rd:
-                print(row)
-                exit()
+                # print(row)
+                # exit()
                 item = {
                     "agency_name": row[' "LICENSE TYPE"'].strip(),
                     "license_type": row[' "LICENSE TYPE"'].strip(),

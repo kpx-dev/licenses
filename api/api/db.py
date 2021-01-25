@@ -46,8 +46,7 @@ class DDB:
 
         return res["Items"]
 
-    def search_by_name(self, state, agency, query):
-        partition_key = "{}-{}".format(state, agency)
+    def search_by_filter(self, partition_key, query):
         filters = False
 
         if "first_name" in query and query['first_name']:
@@ -60,7 +59,6 @@ class DDB:
             else:
                 filters = curr_filter
 
-        print('filters ', partition_key, query['first_name'])
         if filters:
             res = self.table.query(
                 KeyConditionExpression=Key(self.partition_key).eq(partition_key),
@@ -72,3 +70,32 @@ class DDB:
             )
 
         return res["Items"]
+
+    def search_by_index(self, partition_key, query):
+        index_name = None
+        sort_key_val = None
+
+        for k, v in query.items():
+            index_name = k
+            sort_key_val = v
+
+        print(index_name, sort_key_val)
+        res = self.table.query(
+            IndexName=index_name,
+            KeyConditionExpression=Key(self.partition_key).eq(partition_key) & Key(index_name).eq(sort_key_val),
+        )
+
+        return res["Items"]
+
+    def search(self, state, agency, query):
+        partition_key = "{}-{}".format(state, agency)
+
+        # supporting 5 index:
+        indexes = ['org_name', 'last_name', 'city', 'county', 'zip']
+
+        for k, v in query.items():
+            if k not in indexes:
+                return self.search_by_filter(partition_key, query)
+
+        return self.search_by_index(partition_key, query)
+
