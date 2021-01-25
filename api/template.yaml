@@ -4,7 +4,7 @@ Description: pro-licenses API
 
 Globals:
   Function:
-    Timeout: 5
+    Timeout: 10
 
   # Api:
   #   EndpointConfiguration: REGIONAL

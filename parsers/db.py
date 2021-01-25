@@ -5,7 +5,7 @@ ddb_resource = boto3.resource('dynamodb')
 
 # Dynamo DB Queue
 class DDBQueue:
-    def __init__(self, table_name, partition_key, sort_key=None):
+    def __init__(self, table_name='us-professional-licenses', partition_key='state-agency', sort_key='license-number'):
         self.table_name = table_name
         self.partition_key = partition_key
         self.sort_key = sort_key

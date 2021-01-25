@@ -5,7 +5,7 @@ ddb = boto3.resource('dynamodb')
 
 
 class DDB:
-    def __init__(self, table_name="pro-licenses", partition_key="state-agency", sort_key="license-number"):
+    def __init__(self, table_name="us-professional-licenses", partition_key="state-agency", sort_key="license-number"):
         self.table = ddb.Table(table_name)
         self.partition_key = partition_key
         self.sort_key = sort_key
@@ -50,19 +50,25 @@ class DDB:
         partition_key = "{}-{}".format(state, agency)
         filters = False
 
-        if "first_name" in query:
-            filters = Attr('first_name').begins_with(query['first_name'])
+        if "first_name" in query and query['first_name']:
+            filters = Attr('first_name').begins_with(query['first_name'].strip())
 
-        if "last_name" in query:
-            curr_filter = Attr('last_name').begins_with(query['last_name'])
+        if "last_name" in query and query['last_name']:
+            curr_filter = Attr('last_name').begins_with(query['last_name'].strip())
             if filters:
                 filters = filters & curr_filter
             else:
                 filters = curr_filter
 
-        res = self.table.query(
-            KeyConditionExpression=Key(self.partition_key).eq(partition_key),
-            FilterExpression=filters
-        )
+        print('filters ', partition_key, query['first_name'])
+        if filters:
+            res = self.table.query(
+                KeyConditionExpression=Key(self.partition_key).eq(partition_key),
+                FilterExpression=filters
+            )
+        else:
+            res = self.table.query(
+                KeyConditionExpression=Key(self.partition_key).eq(partition_key)
+            )
 
         return res["Items"]

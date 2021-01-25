@@ -30,7 +30,17 @@ def handle_state_agency(state, agency):
 
 # ex: GET /ca/agencies
 def handle_state_agencies(state):
-    return resp(agencies[state])
+    state = agencies[state]
+    state.sort()
+
+    payload = []
+    for name in state:
+        payload.append({
+            "name": name,
+            "collection": agency_slug(name)
+        })
+
+    return resp(payload)
 
 # ex: GET /tx/accountants/123
 def handle_state_agency_license(state, agency, license_number):
@@ -61,9 +71,9 @@ def lambda_handler(event, context):
         if agency == 'agencies':
             return handle_state_agencies(state)
 
-        if "queryStringParameters" in event:
+        if "queryStringParameters" in event and event["queryStringParameters"]:
             if "status" in event["queryStringParameters"]:
-                status = event["queryStringParameters"]["status"] # TODO .lower()
+                status = event["queryStringParameters"]["status"].lower()
 
                 return handle_license_status(state, agency, status)
 
@@ -71,9 +81,9 @@ def lambda_handler(event, context):
     elif len(path) == 3:
         state, agency, extra = path
 
-        if extra == 'search':
+        if extra == 'search' and 'queryStringParameters' in event and event['queryStringParameters']:
             return handle_search(state, agency, event['queryStringParameters'])
 
-        return handle_state_agency_license(path[0], path[1], path[2])
+        return handle_state_agency_license(state, agency, extra)
 
     return resp("This request is not supported right now.")

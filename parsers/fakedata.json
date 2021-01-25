@@ -1,0 +1,16 @@
+{
+  "license_type": "Fake License Type",
+  "speciality_code": "Fake code",
+  "license_number": "-1",
+  "first_name": "Fake name",
+  "last_name": "Fake name",
+  "address1": "Fake address",
+  "address2": "Fake address",
+  "county": "Orange",
+  "state": "CA",
+  "country": "US",
+  "license_issue_date": "2020-01-01",
+  "license_expiration_date": "2021-01-01",
+  "license_status": "Inactive",
+  "zip": "92704"
+}
